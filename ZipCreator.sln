@@ -5,7 +5,9 @@ VisualStudioVersion = 17.3.32819.101
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZipCreator", "ZipCreator\ZipCreator.csproj", "{57453BD4-30E2-47EF-8C6A-1BD5557BE2F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZipCreatorTest", "ZipCreatorTest\ZipCreatorTest.csproj", "{803557E7-E30A-4F5F-A595-E55768D48ABC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZipCreatorTest", "ZipCreatorTest\ZipCreatorTest.csproj", "{803557E7-E30A-4F5F-A595-E55768D48ABC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZipC", "ZipC\ZipC.csproj", "{A55C18DD-4F95-4D3B-AB4E-947E7CD518B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{803557E7-E30A-4F5F-A595-E55768D48ABC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{803557E7-E30A-4F5F-A595-E55768D48ABC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{803557E7-E30A-4F5F-A595-E55768D48ABC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A55C18DD-4F95-4D3B-AB4E-947E7CD518B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A55C18DD-4F95-4D3B-AB4E-947E7CD518B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A55C18DD-4F95-4D3B-AB4E-947E7CD518B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A55C18DD-4F95-4D3B-AB4E-947E7CD518B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

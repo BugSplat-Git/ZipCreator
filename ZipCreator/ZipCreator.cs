@@ -5,8 +5,14 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 
-namespace Zc
+namespace ZipC
 {
+    public enum ZipCreatorResult
+    {
+        Success,
+        OverwriteError
+    }
+
     internal class ArchiveMember
     {
         public bool IsReadOnly { get; set; }
@@ -36,7 +42,7 @@ namespace Zc
             return new ZipCreator(settings);
         }
 
-        public FileInfo MakeZips()
+        public ZipCreatorResult MakeZips()
         {
             var matcher = new Matcher();
 
@@ -76,7 +82,11 @@ namespace Zc
                     File.SetAttributes(member.File.FullName, File.GetAttributes(member.File.FullName) & ~FileAttributes.ReadOnly);
                 }
 
-                Settings.Interceptor(member.File);
+                // Call each of the interceptors
+                foreach (var interceptor in Settings.Interceptors)
+                {
+                    interceptor(member.File);
+                }
 
                 //// TODO BG move
                 //// Sign unsigned exes and dlls
@@ -105,18 +115,18 @@ namespace Zc
             }
 
             // Delete zip if it exists and overwrite is true
-            if (Settings.ZipOutputFile.Exists && !Settings.Overwrite)
+            if (Settings.Output.Exists && !Settings.Overwrite)
             {
-                throw new Exception("Output file already exists and overwrite is set to false!");
+                return ZipCreatorResult.OverwriteError;
             }
-            if (Settings.ZipOutputFile.Exists && Settings.Overwrite)
+            if (Settings.Output.Exists && Settings.Overwrite)
             {
-                File.SetAttributes(Settings.ZipOutputFile.FullName, Settings.ZipOutputFile.Attributes & ~FileAttributes.ReadOnly);
-                Settings.ZipOutputFile.Delete();
+                File.SetAttributes(Settings.Output.FullName, Settings.Output.Attributes & ~FileAttributes.ReadOnly);
+                Settings.Output.Delete();
             }
 
             // Create the zip file
-            using (var zipFile = ZipFile.Open(Settings.ZipOutputFile.FullName, ZipArchiveMode.Create))
+            using (var zipFile = ZipFile.Open(Settings.Output.FullName, ZipArchiveMode.Create))
             {
                 foreach (var member in archiveMembers)
                 {
@@ -135,7 +145,7 @@ namespace Zc
                 }
             }
 
-            return Settings.ZipOutputFile;
+            return ZipCreatorResult.Success;
         }
 
         // https://stackoverflow.com/questions/51179331/is-it-possible-to-use-path-getrelativepath-net-core2-in-winforms-proj-targeti
