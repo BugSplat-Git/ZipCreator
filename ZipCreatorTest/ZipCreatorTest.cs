@@ -84,9 +84,9 @@ namespace ZipCreatorTest
             };
             zipCreator.Settings.Output = new FileInfo(outputZip);
 
-            var result = zipCreator.MakeZips();
+            zipCreator.MakeZips();
 
-            using (var archive = ZipFile.OpenRead(result.FullName))
+            using (var archive = ZipFile.OpenRead(zipCreator.Settings.Output.FullName))
             {
                 var expected = testFiles.Where(file => !file.EndsWith(extension)).OrderBy(name => name);
                 var results = archive.Entries.Select(entry => entry.Name).OrderBy(name => name);
@@ -111,14 +111,16 @@ namespace ZipCreatorTest
         }
 
         [Test]
-        public void MakeZips_WithOverwriteFalse_ThrowsTryingToOverwriteFile()
+        public void MakeZips_WithOverwriteFalse_ReturnsOverwriteError()
         {
             var zipCreator = ZipCreator.CreateFromFile(new FileInfo(inputFile));
             zipCreator.Settings.Overwrite = false;
             zipCreator.Settings.Output = new FileInfo(outputZip);
             File.WriteAllText(outputZip, "hello world!");
 
-            Assert.Throws<Exception>(() => zipCreator.MakeZips());
+            var result = zipCreator.MakeZips();
+
+            Assert.That(result, Is.EqualTo(ZipCreatorResult.OverwriteError));
         }
 
         [Test]
