@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using Zc;
+using ZipC;
 
 namespace ZipCreatorTest
 {
@@ -100,7 +100,7 @@ namespace ZipCreatorTest
             var results = new List<string>();
             var zipCreator = new ZipCreator();
             zipCreator.Settings.Filters = new List<string>() { $"{testFolder}/*" };
-            zipCreator.Settings.Interceptor = (fileInfo) => results.Add(fileInfo.Name);
+            zipCreator.Settings.Interceptors = new List<Action<FileInfo>>() { (fileInfo) => results.Add(fileInfo.Name) };
             zipCreator.Settings.ZipOutputFile = new FileInfo(outputZip);
 
             zipCreator.MakeZips();
