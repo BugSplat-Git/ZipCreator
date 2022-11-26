@@ -77,8 +77,8 @@ You can also creat an instances of `ZipCreator` with the default constructor and
 var zipCreator = new ZipCreator();
 zipCreator.Settings.Filters = new List<string>() { "path/to/folder/**/*" };
 zipCreator.Settings.Interceptors.Add((fileInfo) => Console.WriteLine(fileInfo.FullName));
+zipCreator.Settings.Output = new FileInfo(pathToOutputZip);
 zipCreator.Settings.Overwrite = true;
-zipCreator.Settings.ZipOutputFile = new FileInfo(pathToOutputZip);
 ```
 
 The `Filters` property accepts a list of path globs. You can also exclude patterns by prefixing the pattern with a `!`.
@@ -97,7 +97,7 @@ The `Interceptors` property is a `List<Action<FileInfo>>` containting actions th
 zipCreator.Settings.Interceptors.Add((fileInfo) => SignTool(fileInfo.FullName));
 ```
 
-The `Overwrite` property controls whether the `ZipOutputFile` file should be overwritten if it exists. If `Overwrite` is false the call to `MakeZips` will return `ZipCreatorResult.OverwriteError` if the output file exists.
+The `Overwrite` property controls whether the `Output` file should be overwritten if it exists. If `Overwrite` is false the call to `MakeZips` will return `ZipCreatorResult.OverwriteError` if the output file exists.
 
 ## 🐛 About
 

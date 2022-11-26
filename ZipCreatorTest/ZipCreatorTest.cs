@@ -61,11 +61,11 @@ namespace ZipCreatorTest
             var extension = ".exe";
             var zipCreator = new ZipCreator();
             zipCreator.Settings.Filters = new List<string>() { $"{testFolder}/*{extension}" };
-            zipCreator.Settings.ZipOutputFile = new FileInfo(outputZip);
+            zipCreator.Settings.Output = new FileInfo(outputZip);
 
-            var result = zipCreator.MakeZips();
+            zipCreator.MakeZips();
 
-            using (var archive = ZipFile.OpenRead(result.FullName))
+            using (var archive = ZipFile.OpenRead(zipCreator.Settings.Output.FullName))
             {
                 var expected = testFiles.Where(file => file.EndsWith(extension)).ToList();
                 var results = archive.Entries.Select(entry => entry.Name).ToList();
@@ -82,7 +82,7 @@ namespace ZipCreatorTest
                 $"{testFolder}/*",
                 $"!{testFolder}/*{extension}"
             };
-            zipCreator.Settings.ZipOutputFile = new FileInfo(outputZip);
+            zipCreator.Settings.Output = new FileInfo(outputZip);
 
             var result = zipCreator.MakeZips();
 
@@ -101,7 +101,7 @@ namespace ZipCreatorTest
             var zipCreator = new ZipCreator();
             zipCreator.Settings.Filters = new List<string>() { $"{testFolder}/*" };
             zipCreator.Settings.Interceptors = new List<Action<FileInfo>>() { (fileInfo) => results.Add(fileInfo.Name) };
-            zipCreator.Settings.ZipOutputFile = new FileInfo(outputZip);
+            zipCreator.Settings.Output = new FileInfo(outputZip);
 
             zipCreator.MakeZips();
 
@@ -115,7 +115,7 @@ namespace ZipCreatorTest
         {
             var zipCreator = ZipCreator.CreateFromFile(new FileInfo(inputFile));
             zipCreator.Settings.Overwrite = false;
-            zipCreator.Settings.ZipOutputFile = new FileInfo(outputZip);
+            zipCreator.Settings.Output = new FileInfo(outputZip);
             File.WriteAllText(outputZip, "hello world!");
 
             Assert.Throws<Exception>(() => zipCreator.MakeZips());
@@ -126,7 +126,7 @@ namespace ZipCreatorTest
         {
             var zipCreator = ZipCreator.CreateFromFile(new FileInfo(inputFile));
             zipCreator.Settings.Overwrite = true;
-            zipCreator.Settings.ZipOutputFile = new FileInfo(outputZip);
+            zipCreator.Settings.Output = new FileInfo(outputZip);
             File.WriteAllText(outputZip, "hello world!");
 
             Assert.DoesNotThrow(() => zipCreator.MakeZips());

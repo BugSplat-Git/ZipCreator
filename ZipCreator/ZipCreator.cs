@@ -115,18 +115,18 @@ namespace ZipC
             }
 
             // Delete zip if it exists and overwrite is true
-            if (Settings.ZipOutputFile.Exists && !Settings.Overwrite)
+            if (Settings.Output.Exists && !Settings.Overwrite)
             {
                 return ZipCreatorResult.OverwriteError;
             }
-            if (Settings.ZipOutputFile.Exists && Settings.Overwrite)
+            if (Settings.Output.Exists && Settings.Overwrite)
             {
-                File.SetAttributes(Settings.ZipOutputFile.FullName, Settings.ZipOutputFile.Attributes & ~FileAttributes.ReadOnly);
-                Settings.ZipOutputFile.Delete();
+                File.SetAttributes(Settings.Output.FullName, Settings.Output.Attributes & ~FileAttributes.ReadOnly);
+                Settings.Output.Delete();
             }
 
             // Create the zip file
-            using (var zipFile = ZipFile.Open(Settings.ZipOutputFile.FullName, ZipArchiveMode.Create))
+            using (var zipFile = ZipFile.Open(Settings.Output.FullName, ZipArchiveMode.Create))
             {
                 foreach (var member in archiveMembers)
                 {

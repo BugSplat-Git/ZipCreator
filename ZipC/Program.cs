@@ -59,7 +59,7 @@ public class Program
             Directory.SetCurrentDirectory(inputFileParentDirectoryPath);
 
             var zipCreator = ZipCreator.CreateFromFile(inputFile);
-            zipCreator.Settings.ZipOutputFile = outputFile;
+            zipCreator.Settings.Output = outputFile;
             zipCreator.Settings.Overwrite = force;
             zipCreator.Settings.Interceptors.Add((f) => Log.Verbose($"Adding {f.FullName}..."));
 

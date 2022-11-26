@@ -8,8 +8,8 @@ namespace ZipC
     {
         public List<string> Filters { get; set; } = new List<string>() { "**/*.*" };
         public List<Action<FileInfo>> Interceptors { get; set; } = new List<Action<FileInfo>>();
+        public FileInfo Output { get; set; } = GetTempFilePathWithExtension(".zip");
         public bool Overwrite { get; set; } = false;
-        public FileInfo ZipOutputFile { get; set; } = GetTempFilePathWithExtension(".zip");
 
         private static FileInfo GetTempFilePathWithExtension(string extension)
         {
