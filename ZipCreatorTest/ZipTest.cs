@@ -51,6 +51,18 @@ namespace ZipTest
         }
 
         [Test]
+        public void Files_ReturnsListOfFilesMatchingGlob()
+        {
+            var zip = new Zip();
+            zip.Settings.Filters = new List<string>() { $"{testFolder}/*" };
+
+            var result = zip.Files.Select(fileInfo => fileInfo.FullName);
+
+            var expected = Directory.GetFiles(testFolder).Select(path => Path.Combine(Directory.GetCurrentDirectory(), path)).ToList();
+            CollectionAssert.AreEqual(expected, result);
+        }
+
+        [Test]
         public void MakeZips_WithGlobInput_CreatesZipWithFilesMatchingGlob()
         {
             var extension = ".exe";
@@ -60,7 +72,7 @@ namespace ZipTest
 
             zip.Write();
 
-            using (var archive = System.IO.Compression.ZipFile.OpenRead(zip.Settings.Output.FullName))
+            using (var archive = ZipFile.OpenRead(zip.Settings.Output.FullName))
             {
                 var expected = testFiles.Where(file => file.EndsWith(extension)).ToList();
                 var results = archive.Entries.Select(entry => entry.Name).ToList();
@@ -81,7 +93,7 @@ namespace ZipTest
 
             zip.Write();
 
-            using (var archive = System.IO.Compression.ZipFile.OpenRead(zip.Settings.Output.FullName))
+            using (var archive = ZipFile.OpenRead(zip.Settings.Output.FullName))
             {
                 var expected = testFiles.Where(file => !file.EndsWith(extension)).OrderBy(name => name);
                 var results = archive.Entries.Select(entry => entry.Name).OrderBy(name => name);
