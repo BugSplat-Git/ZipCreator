@@ -65,6 +65,12 @@ The `Overwrite` property controls whether the `Output` file should be overwritte
 zip.Settings.Overwrite = true
 ```
 
+The collection of files that will be operated on can be accessed via the readonly `Files` property.
+
+```cs
+var files = zip.Files;
+```
+
 Finally, call `Write` to create a `.zip` file and write it to the location specified in `Settings.Output`.
 
 ```cs

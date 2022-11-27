@@ -60,7 +60,7 @@ namespace ZipTest
 
             zip.Write();
 
-            using (var archive = ZipFile.OpenRead(zip.Settings.Output.FullName))
+            using (var archive = System.IO.Compression.ZipFile.OpenRead(zip.Settings.Output.FullName))
             {
                 var expected = testFiles.Where(file => file.EndsWith(extension)).ToList();
                 var results = archive.Entries.Select(entry => entry.Name).ToList();
@@ -81,7 +81,7 @@ namespace ZipTest
 
             zip.Write();
 
-            using (var archive = ZipFile.OpenRead(zip.Settings.Output.FullName))
+            using (var archive = System.IO.Compression.ZipFile.OpenRead(zip.Settings.Output.FullName))
             {
                 var expected = testFiles.Where(file => !file.EndsWith(extension)).OrderBy(name => name);
                 var results = archive.Entries.Select(entry => entry.Name).OrderBy(name => name);
