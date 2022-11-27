@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "ZipC": {
-      "commandName": "Project",
-      "commandLineArgs": "test.txt output.zip",
-      "workingDirectory": "./"
-    }
-  }
-}

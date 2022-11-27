@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace ZipC
+namespace ZipCreator
 {
-    public class ZipCreatorSettings
+    public class ZipSettings
     {
         public List<string> Filters { get; set; } = new List<string>() { "**/*.*" };
         public List<Action<FileInfo>> Interceptors { get; set; } = new List<Action<FileInfo>>();
