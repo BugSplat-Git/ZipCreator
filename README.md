@@ -8,49 +8,9 @@
 
 ## 👋 Introduction
 
-ZipC contains a .NET 6.0 command-line [tool](#🧰-tool) and .NET Standard 2.0 [library](#📚-library) for creating zip files from [glob patterns](https://en.wikipedia.org/wiki/Glob_(programming)).
+ZipCreator is a .NET Standard 2.0 [library](#📚-library) for creating zip files from [glob patterns](https://en.wikipedia.org/wiki/Glob_(programming)).
 
-## 🧰 Tool
-
-The `ZipC` command-line tool can be installed globally via [dotnet](https://dotnet.microsoft.com/).
-
-```sh
-dotnet tool install -g zipc
-```
-
-Run `dotnet zipc -h` to see usage information.
-
-```sh
-C:\www\ZipCreator\ZipC> dotnet zipc -h
-Description:
-  Create a zip via a manifest file containing glob pattern rules
-
-Usage:
-  ZipC <input> <output> [options]
-
-Arguments:
-  <input>   Zip file manifest containing glob patterns of file paths to include
-  <output>  Path to zip file output
-
-Options:
-  --force         Overwrite output file if it exists [default: False]
-  --verbose       Show verbose log statements [default: False]
-  --version       Show version information
-  -?, -h, --help  Show help and usage information
-```
-
-For the `input` argument, pass the name of a file containing glob patterns of files to include. 
-
-[input.txt](./ZipC/input.txt)
-```txt
-path/to/folder/**/*
-README.md
-LICENSE.md
-```
-
-For the `output` argument, pass a path to the location of the output file. If you'd like to overwrite the output file if it exists, add the `--force` option. To increase log verbosity add the `--verbose` flag to your command's arguments.
-
-## 📚 Library
+## ⚙️ Installation
 
 The `ZipCreator` library can be added to your project via NuGet.
 
@@ -58,33 +18,35 @@ The `ZipCreator` library can be added to your project via NuGet.
 Install-Package ZipCreator
 ```
 
-Add a using statement for the `ZipC` namespace
+## 🏗️ Usage
+
+Add a using statement for the `ZipCreator` namespace
 
 ```cs
-using ZipC;
+using ZipCreator;
 ```
 
-You can create an instance of `ZipCreator` from a text file that contains a list of filters separated by new lines.
+Create an instance of `Zip` from a text file that contains a list of filters separated by new lines.
 
-[input.txt](./ZipC/input.txt)
+[input.txt](./ZipCreator/input.txt)
 ```cs
-var zipCreator = ZipCreator.CreatFromFile("input.txt");
+var zip = Zip.CreateFromFile("input.txt");
 ```
 
-You can also creat an instances of `ZipCreator` with the default constructor and set the `Settings` properties according to your use case.
+You can also create an instances of `Zip` with the default constructor and set the `Settings` properties according to your use case.
 
 ```cs
-var zipCreator = new ZipCreator();
-zipCreator.Settings.Filters = new List<string>() { "path/to/folder/**/*" };
-zipCreator.Settings.Interceptors.Add((fileInfo) => Console.WriteLine(fileInfo.FullName));
-zipCreator.Settings.Output = new FileInfo(pathToOutputZip);
-zipCreator.Settings.Overwrite = true;
+var zip = new Zip();
+zip.Settings.Filters = new List<string>() { "path/to/folder/**/*" };
+zip.Settings.Interceptors.Add((fileInfo) => Console.WriteLine(fileInfo.FullName));
+zip.Settings.Output = new FileInfo(pathToOutputZip);
+zip.Settings.Overwrite = true;
 ```
 
 The `Filters` property accepts a list of path globs. You can also exclude patterns by prefixing the pattern with a `!`.
 
 ```cs
-zipCreator.Settings.Filters = new List<string>()
+zip.Settings.Filters = new List<string>()
 {
     "path/to/folder/**/*",
     "!path/to/folder/exclude.txt"
@@ -94,10 +56,20 @@ zipCreator.Settings.Filters = new List<string>()
 The `Interceptors` property is a `List<Action<FileInfo>>` containting actions that get invoked with each file before it is added to the zip.
 
 ```cs
-zipCreator.Settings.Interceptors.Add((fileInfo) => SignTool(fileInfo.FullName));
+zip.Settings.Interceptors.Add((fileInfo) => SignTool(fileInfo.FullName));
 ```
 
-The `Overwrite` property controls whether the `Output` file should be overwritten if it exists. If `Overwrite` is false the call to `MakeZips` will return `ZipCreatorResult.OverwriteError` if the output file exists.
+The `Overwrite` property controls whether the `Output` file should be overwritten if it exists. If `Overwrite` is false the call to `MakeZips` will return `ZipResult.OverwriteError` if the output file exists.
+
+```cs
+zip.Settings.Overwrite = true
+```
+
+Finally, call `Write` to create a `.zip` file and write it to the location specified in `Settings.Output`.
+
+```cs
+var result = zip.Write();
+```
 
 ## 🐛 About
 

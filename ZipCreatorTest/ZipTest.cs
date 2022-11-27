@@ -1,12 +1,7 @@
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using ZipC;
+using ZipCreator;
 
-namespace ZipCreatorTest
+namespace ZipTest
 {
     public class Tests
     {
@@ -44,28 +39,28 @@ namespace ZipCreatorTest
         [Test]
         public void CreateFromFile_WithInvalidFile_ThrowsArgumentException()
         {
-            Assert.Throws<ArgumentException>(() => ZipCreator.CreateFromFile(new FileInfo("invalid")));
+            Assert.Throws<ArgumentException>(() => Zip.CreateFromFile(new FileInfo("invalid")));
         }
 
         [Test]
         public void CreateFromFile_WithValidFile_SetsValueOfFilters()
         {
-            var zipCreator = ZipCreator.CreateFromFile(new FileInfo(inputFile));
+            var zip = Zip.CreateFromFile(new FileInfo(inputFile));
 
-            Assert.That(zipCreator.Settings.Filters[0], Is.EqualTo(inputFileContents));
+            Assert.That(zip.Settings.Filters[0], Is.EqualTo(inputFileContents));
         }
 
         [Test]
         public void MakeZips_WithGlobInput_CreatesZipWithFilesMatchingGlob()
         {
             var extension = ".exe";
-            var zipCreator = new ZipCreator();
-            zipCreator.Settings.Filters = new List<string>() { $"{testFolder}/*{extension}" };
-            zipCreator.Settings.Output = new FileInfo(outputZip);
+            var zip = new Zip();
+            zip.Settings.Filters = new List<string>() { $"{testFolder}/*{extension}" };
+            zip.Settings.Output = new FileInfo(outputZip);
 
-            zipCreator.MakeZips();
+            zip.Write();
 
-            using (var archive = ZipFile.OpenRead(zipCreator.Settings.Output.FullName))
+            using (var archive = ZipFile.OpenRead(zip.Settings.Output.FullName))
             {
                 var expected = testFiles.Where(file => file.EndsWith(extension)).ToList();
                 var results = archive.Entries.Select(entry => entry.Name).ToList();
@@ -77,16 +72,16 @@ namespace ZipCreatorTest
         public void MakeZips_WithExcludeFilter_CreatesZipIgnoringExcludeFilters()
         {
             var extension = ".txt";
-            var zipCreator = new ZipCreator();
-            zipCreator.Settings.Filters = new List<string>() {
+            var zip = new Zip();
+            zip.Settings.Filters = new List<string>() {
                 $"{testFolder}/*",
                 $"!{testFolder}/*{extension}"
             };
-            zipCreator.Settings.Output = new FileInfo(outputZip);
+            zip.Settings.Output = new FileInfo(outputZip);
 
-            zipCreator.MakeZips();
+            zip.Write();
 
-            using (var archive = ZipFile.OpenRead(zipCreator.Settings.Output.FullName))
+            using (var archive = ZipFile.OpenRead(zip.Settings.Output.FullName))
             {
                 var expected = testFiles.Where(file => !file.EndsWith(extension)).OrderBy(name => name);
                 var results = archive.Entries.Select(entry => entry.Name).OrderBy(name => name);
@@ -98,12 +93,12 @@ namespace ZipCreatorTest
         public void MakeZips_WithInterceptor_CallsInterceptorWithEachFile()
         {
             var results = new List<string>();
-            var zipCreator = new ZipCreator();
-            zipCreator.Settings.Filters = new List<string>() { $"{testFolder}/*" };
-            zipCreator.Settings.Interceptors = new List<Action<FileInfo>>() { (fileInfo) => results.Add(fileInfo.Name) };
-            zipCreator.Settings.Output = new FileInfo(outputZip);
+            var zip = new Zip();
+            zip.Settings.Filters = new List<string>() { $"{testFolder}/*" };
+            zip.Settings.Interceptors = new List<Action<FileInfo>>() { (fileInfo) => results.Add(fileInfo.Name) };
+            zip.Settings.Output = new FileInfo(outputZip);
 
-            zipCreator.MakeZips();
+            zip.Write();
 
             var expected = testFiles.OrderBy(name => name);
             var actual = results.OrderBy(name => name);
@@ -113,25 +108,25 @@ namespace ZipCreatorTest
         [Test]
         public void MakeZips_WithOverwriteFalse_ReturnsOverwriteError()
         {
-            var zipCreator = ZipCreator.CreateFromFile(new FileInfo(inputFile));
-            zipCreator.Settings.Overwrite = false;
-            zipCreator.Settings.Output = new FileInfo(outputZip);
+            var zip = Zip.CreateFromFile(new FileInfo(inputFile));
+            zip.Settings.Overwrite = false;
+            zip.Settings.Output = new FileInfo(outputZip);
             File.WriteAllText(outputZip, "hello world!");
 
-            var result = zipCreator.MakeZips();
+            var result = zip.Write();
 
-            Assert.That(result, Is.EqualTo(ZipCreatorResult.OverwriteError));
+            Assert.That(result, Is.EqualTo(ZipWriteResult.OverwriteError));
         }
 
         [Test]
         public void MakeZips_WithOverwriteTrue_OverwritesOutputFile()
         {
-            var zipCreator = ZipCreator.CreateFromFile(new FileInfo(inputFile));
-            zipCreator.Settings.Overwrite = true;
-            zipCreator.Settings.Output = new FileInfo(outputZip);
+            var zip = Zip.CreateFromFile(new FileInfo(inputFile));
+            zip.Settings.Overwrite = true;
+            zip.Settings.Output = new FileInfo(outputZip);
             File.WriteAllText(outputZip, "hello world!");
 
-            Assert.DoesNotThrow(() => zipCreator.MakeZips());
+            Assert.DoesNotThrow(() => zip.Write());
         }
 
         [TearDown]

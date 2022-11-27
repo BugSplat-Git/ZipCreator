@@ -5,44 +5,38 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 
-namespace ZipC
+namespace ZipCreator
 {
-    public enum ZipCreatorResult
-    {
-        Success,
-        OverwriteError
-    }
-
     internal class ArchiveMember
     {
         public bool IsReadOnly { get; set; }
         public FileInfo File { get; set; }
     }
 
-    public class ZipCreator
+    public class Zip
     {
-        public ZipCreatorSettings Settings { get; set; }
+        public ZipSettings Settings { get; set; }
 
-        public ZipCreator(ZipCreatorSettings settings = null)
+        public Zip(ZipSettings settings = null)
         {
-            Settings = settings ?? new ZipCreatorSettings();
+            Settings = settings ?? new ZipSettings();
         }
 
-        public static ZipCreator CreateFromFile(FileInfo inputManifestFile)
+        public static Zip CreateFromFile(FileInfo inputManifestFile)
         {
             if (!inputManifestFile.Exists)
             {
                 throw new ArgumentException($"Input file does not exist at path: {inputManifestFile.FullName}");
             }
 
-            var settings = new ZipCreatorSettings()
+            var settings = new ZipSettings()
             {
                 Filters = File.ReadLines(inputManifestFile.FullName).ToList()
             };
-            return new ZipCreator(settings);
+            return new Zip(settings);
         }
 
-        public ZipCreatorResult MakeZips()
+        public ZipWriteResult Write()
         {
             var matcher = new Matcher();
 
@@ -62,15 +56,16 @@ namespace ZipC
             var currentDirectory = Directory.GetCurrentDirectory();
             var wrapper = new DirectoryInfoWrapper(new DirectoryInfo(currentDirectory));
             var result = matcher.Execute(wrapper);
-            var archiveMembers = result.Files.Select(match => {
-                var file = new FileInfo(match.Path);
-                var isReadOnly = file.IsReadOnly;
-                return new ArchiveMember()
-                {
-                    File = file,
-                    IsReadOnly = isReadOnly
-                };
-            });
+            var archiveMembers = result.Files
+                .Select(match => {
+                    var file = new FileInfo(match.Path);
+                    var isReadOnly = file.IsReadOnly;
+                    return new ArchiveMember()
+                    {
+                        File = file,
+                        IsReadOnly = isReadOnly
+                    };
+                });
 
             foreach (var member in archiveMembers)
             {
@@ -117,7 +112,7 @@ namespace ZipC
             // Delete zip if it exists and overwrite is true
             if (Settings.Output.Exists && !Settings.Overwrite)
             {
-                return ZipCreatorResult.OverwriteError;
+                return ZipWriteResult.OverwriteError;
             }
             if (Settings.Output.Exists && Settings.Overwrite)
             {
@@ -145,7 +140,7 @@ namespace ZipC
                 }
             }
 
-            return ZipCreatorResult.Success;
+            return ZipWriteResult.Success;
         }
 
         // https://stackoverflow.com/questions/51179331/is-it-possible-to-use-path-getrelativepath-net-core2-in-winforms-proj-targeti
