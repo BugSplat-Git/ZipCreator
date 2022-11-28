@@ -116,12 +116,19 @@ namespace ZipCreator
             return relativePath.Replace("..\\", "");
         }
 
-        // https://stackoverflow.com/questions/51179331/is-it-possible-to-use-path-getrelativepath-net-core2-in-winforms-proj-targeti
-        private static string GetRelativePath(string relativeTo, string path)
+        // https://stackoverflow.com/a/703292
+        string GetRelativePath(string fromFolder, string toFile)
         {
-            var uri = new Uri(relativeTo);
-            var rel = Uri.UnescapeDataString(uri.MakeRelativeUri(new Uri(path)).ToString()).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-            return rel;
+            var pathUri = new Uri(toFile);
+
+            // Folders must end in a slash
+            if (!fromFolder.EndsWith(Path.DirectorySeparatorChar.ToString()))
+            {
+                fromFolder += Path.DirectorySeparatorChar;
+            }
+
+            var folderUri = new Uri(fromFolder);
+            return Uri.UnescapeDataString(folderUri.MakeRelativeUri(pathUri).ToString().Replace('/', Path.DirectorySeparatorChar));
         }
     }
 }
