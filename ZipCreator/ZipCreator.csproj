@@ -10,7 +10,10 @@
     <RepositoryUrl>https://github.com/BugSplat-Git/ZipCreator</RepositoryUrl>
     <PackageTags>zip dotnet glob archive compress files library</PackageTags>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>Initial release</PackageReleaseNotes>
+    <PackageReleaseNotes>Fix extra folder at root of zip</PackageReleaseNotes>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
